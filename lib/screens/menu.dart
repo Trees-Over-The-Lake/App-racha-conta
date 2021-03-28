@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'resultado.dart';
 
 class Menu extends StatefulWidget {
   static const routeName = 'menu_principal';
@@ -51,7 +52,8 @@ class _MenuState extends State<Menu> {
                 ),
                 TextFormField(
                   initialValue: numPessoas.toString(),
-                  decoration: InputDecoration(labelText: 'Número de pessoas: '),
+                  decoration: InputDecoration(
+                      labelText: 'Número de pessoas para dividir a conta: '),
                   keyboardType: TextInputType.number,
                   onSaved: (value) {
                     numPessoas = int.parse(value);
@@ -83,13 +85,17 @@ class _MenuState extends State<Menu> {
                 ),
                 CheckboxListTile(
                     value: ehAlcool,
-                    title: Text('É uma bebida alcoolica:'),
+                    title: Text('Alguém bebendo?'),
                     onChanged: (value) {
                       setState(() {
                         ehAlcool = value;
                       });
                     }),
-                if (ehAlcool) buildEhAlcoolTextFormField()
+                if (ehAlcool) ...buildEhAlcoolTextFormField(),
+                ElevatedButton(
+                  onPressed: () => calcular(context),
+                  child: Text('Calcular'),
+                )
               ],
             ),
           ),
@@ -98,43 +104,72 @@ class _MenuState extends State<Menu> {
     );
   }
 
-  buildEhAlcoolTextFormField() {
-    TextFormField(
-      initialValue: precoTotal.toStringAsFixed(2),
-      decoration:
-          InputDecoration(border: OutlineInputBorder(), prefix: Text('R\$')),
-      keyboardType: TextInputType.number,
-      onSaved: (value) {
-        precoTotal = double.parse(value);
-      },
-      validator: (value) {
-        if (value.isEmpty) {
-          return 'O valor da conta não pode ser vazio!';
-        } else if (double.tryParse(value) == null) {
-          return 'O valor precisa ser numérico!';
-        }
+  List<Widget> buildEhAlcoolTextFormField() {
+    return [
+      Text('Número de pessoas bebendo:'),
+      TextFormField(
+        enabled: ehAlcool,
+        initialValue: numPessoasBebendo.toString(),
+        decoration: InputDecoration(border: OutlineInputBorder()),
+        keyboardType: TextInputType.number,
+        onSaved: (value) {
+          numPessoasBebendo = int.parse(value);
+        },
+        validator: (value) {
+          if (value.isEmpty) {
+            return 'O número de pessoas não pode ser vazio!';
+          } else if (int.tryParse(value) == null) {
+            return 'O valor precisa ser numérico!';
+          }
 
-        return null;
-      },
-    );
+          return null;
+        },
+      ),
+      Text('Valor gasto pelas pessoas que estão bebendo:'),
+      TextFormField(
+        enabled: ehAlcool,
+        initialValue: precoBebida.toStringAsFixed(2),
+        decoration:
+            InputDecoration(border: OutlineInputBorder(), prefix: Text('R\$')),
+        keyboardType: TextInputType.number,
+        onSaved: (value) {
+          precoBebida = double.parse(value);
+        },
+        validator: (value) {
+          if (value.isEmpty) {
+            return 'O valor da conta não pode ser vazio!';
+          } else if (double.tryParse(value) == null) {
+            return 'O valor precisa ser numérico!';
+          }
 
-    TextFormField(
-      initialValue: precoTotal.toStringAsFixed(2),
-      decoration:
-          InputDecoration(border: OutlineInputBorder(), prefix: Text('R\$')),
-      keyboardType: TextInputType.number,
-      onSaved: (value) {
-        precoTotal = double.parse(value);
-      },
-      validator: (value) {
-        if (value.isEmpty) {
-          return 'O valor da conta não pode ser vazio!';
-        } else if (double.tryParse(value) == null) {
-          return 'O valor precisa ser numérico!';
-        }
+          return null;
+        },
+      )
+    ];
+  }
 
-        return null;
-      },
-    );
+  calcular(BuildContext context) {
+    if (globalKey.currentState.validate()) {
+      globalKey.currentState.save();
+
+      if (!ehAlcool) {
+        numPessoasBebendo = 0;
+        precoBebida = 0;
+      }
+
+      double valorGarcom = (porcentagemGarcom / 100) * precoTotal;
+      precoTotal += valorGarcom;
+
+      double precoIndividual = (precoTotal - precoBebida) / numPessoas;
+
+      double precoAlcool = 0;
+      if (numPessoasBebendo > 0)
+        precoAlcool = precoIndividual + (precoBebida / numPessoasBebendo);
+
+      Navigator.of(context).pushNamed(Resultado.routeName, arguments: {
+        'precoIndividual': precoIndividual,
+        'precoAlcool': precoAlcool
+      });
+    }
   }
 }

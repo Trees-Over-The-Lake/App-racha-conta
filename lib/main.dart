@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/menu.dart';
+import 'screens/resultado.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,7 +12,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           primarySwatch: Colors.deepPurple, canvasColor: Colors.amber[200]),
       initialRoute: Menu.routeName,
-      routes: {Menu.routeName: (ctx) => Menu()},
+      routes: {
+        Menu.routeName: (ctx) => Menu(),
+        Resultado.routeName: (ctx) => Resultado()
+      },
     );
   }
 }
