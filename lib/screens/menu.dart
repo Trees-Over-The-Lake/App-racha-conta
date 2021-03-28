@@ -15,7 +15,7 @@ class _MenuState extends State<Menu> {
   double precoTotal = 0.0;
   double precoBebida = 0;
   double porcentagemGarcom = 10;
-  int numPessoas = 0;
+  int numPessoas = 1;
   int numPessoasBebendo = 0;
   bool ehAlcool = false;
 
@@ -151,6 +151,28 @@ class _MenuState extends State<Menu> {
   calcular(BuildContext context) {
     if (globalKey.currentState.validate()) {
       globalKey.currentState.save();
+
+      if (numPessoasBebendo > numPessoas) {
+        showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: Text('Erro'),
+                  content: Text(
+                      'O número de pessoas bebendo não pode ser maior que o número total de pessoas!'),
+                ));
+        return;
+      }
+
+      if (precoTotal < precoBebida) {
+        showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: Text('Erro'),
+                  content: Text(
+                      'O preço das bebidas não pode ser superior ao preço do total da conta!'),
+                ));
+        return;
+      }
 
       if (!ehAlcool) {
         numPessoasBebendo = 0;
