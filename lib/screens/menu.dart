@@ -189,8 +189,10 @@ class _MenuState extends State<Menu> {
         precoAlcool = precoIndividual + (precoBebida / numPessoasBebendo);
 
       Navigator.of(context).pushNamed(Resultado.routeName, arguments: {
+        'precoTotal': precoTotal,
         'precoIndividual': precoIndividual,
-        'precoAlcool': precoAlcool
+        'precoAlcool': precoAlcool,
+        'precoGarcom': valorGarcom
       });
     }
   }

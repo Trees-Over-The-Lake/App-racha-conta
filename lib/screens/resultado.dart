@@ -16,6 +16,18 @@ class Resultado extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
+              'Valor total da conta: ' +
+                  resultados['precoTotal'].toStringAsFixed(2),
+              style: TextStyle(fontSize: 32),
+            ),
+            Text(''),
+            Text(
+              'Valor para o garçom: ' +
+                  resultados['precoGarcom'].toStringAsFixed(2),
+              style: TextStyle(fontSize: 32),
+            ),
+            Text(''),
+            Text(
               'Preço para quem não bebeu: R\$' +
                   resultados['precoIndividual'].toStringAsFixed(2),
               style: TextStyle(fontSize: 32),
